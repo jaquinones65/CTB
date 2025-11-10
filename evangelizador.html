@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Evangelizador - CTB</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="ctb-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-contact">
+                    <span>Telefono: 322 7721323</span>
+                    <span>Nuestro numero de contacto</span>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="ctb-nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <div class="logo">CTB</div>
+                    <div class="brand-text">
+                        <h1>Panel Evangelizador</h1>
+                        <p>Gestión de Evangelizados</p>
+                    </div>
+                </div>
+
+                <div class="nav-image">
+                    <img src="images/ctbim1.JPG" alt="Logo CTB">
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="panel-evangelizador.html" class="active">Mi Panel</a></li>
+                    <li><a href="login.html">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Layout Horizontal: Progreso y Formulario lado a lado -->
+        <div class="panel-layout-horizontal">
+            <!-- Sección Mi Progreso -->
+            <section class="progress-section">
+                <h2>Mi Progreso</h2>
+                <div class="progress-cards">
+                    <div class="progress-card">
+                        <div class="progress-icon">👥</div>
+                        <div class="progress-content">
+                            <div class="progress-number" id="total-evangelizados">0</div>
+                            <div class="progress-label">Evangelizados Registrados</div>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-icon">🎯</div>
+                        <div class="progress-content">
+                            <div class="progress-number" id="almas-comprometidas">0</div>
+                            <div class="progress-label">Almas Comprometidas</div>
+                        </div>
+                    </div>
+                    <div class="progress-card">
+                        <div class="progress-icon">📖</div>
+                        <div class="progress-content">
+                            <div class="progress-number" id="biblias-solicitadas">0</div>
+                            <div class="progress-label">Biblias Solicitadas</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Formulario de Inscripción -->
+            <section class="form-section">
+                <div class="form-header">
+                    <h2>Inscribir Nuevo Evangelizado</h2>
+                    <p>Complete la información para pre-inscribir</p>
+                </div>
+
+                <form id="formulario-inscripcion" class="modern-form">
+                    <div class="form-group">
+                        <label for="nombre_evangelizado">Nombre Completo *</label>
+                        <input type="text" id="nombre_evangelizado" name="nombre_evangelizado" required 
+                               placeholder="Ingrese el nombre completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="cedula_evangelizado">Cédula *</label>
+                        <input type="text" id="cedula_evangelizado" name="cedula_evangelizado" required 
+                               placeholder="Solo números" pattern="[0-9]+">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefono_evangelizado">WhatsApp *</label>
+                        <input type="tel" id="telefono_evangelizado" name="telefono_evangelizado" required 
+                               placeholder="+57 300 123 4567">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <span class="button-text">Inscribir Evangelizado</span>
+                            <div class="button-loader" style="display: none;">
+                                <div class="loader"></div>
+                            </div>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- Lista de Evangelizados (debajo) -->
+        <section class="lista-section">
+            <div class="section-header">
+                <h2>Evangelizados Inscritos</h2>
+                <div class="section-actions">
+                    <button class="btn btn-outline btn-small" id="btn-refresh">
+                        <span>🔄 Actualizar</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="evangelizados-container">
+                <div class="evangelizados-grid" id="lista-evangelizados">
+                    <!-- Tarjetas de evangelizados se cargarán aquí -->
+                    <div class="no-data">
+                        <div class="no-data-icon">📝</div>
+                        <p>Aún no ha inscrito evangelizados</p>
+                        <small>Use el formulario para comenzar</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mensaje de éxito -->
+        <div id="mensaje-exito" class="success-message" style="display: none;">
+            <div class="success-content">
+                <div class="success-icon">✅</div>
+                <div class="success-text">
+                    <h3>Inscripción Exitosa</h3>
+                    <p>El evangelizado ha sido pre-inscrito correctamente.</p>
+                    <p>Se enviará un mensaje de WhatsApp con sus credenciales.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="ctb-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Colombia Tierra Bendita</h3>
+                    <p>Transformando vidas a través de la evangelización</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contacto</h4>
+                    <p>📞 +57 322 7721323</p>
+                    <p>📧 info@colombiatierrabendita.org</p>
+                </div>
+
+               <!---- <div class="footer-section">
+                    <h4>Desarrollado por</h4>
+                    <p>Carlos Algarin</p>
+                    <p>Desarrollador Web</p>
+                    <p>📧 carlos@colombiatierrabendita.org</p>
+                </div>-->
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Colombia Tierra Bendita - Todos los derechos reservados</p>
+                <p>Página desarrollada por Carlos Algarin</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let evangelizados = JSON.parse(localStorage.getItem('evangelizados')) || [];
+
+        // Cargar lista de evangelizados en formato de tarjetas
+        function cargarEvangelizados() {
+            const lista = document.getElementById('lista-evangelizados');
+            
+            if (evangelizados.length === 0) {
+                lista.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📝</div>
+                        <p>Aún no ha inscrito evangelizados</p>
+                        <small>Use el formulario para comenzar</small>
+                    </div>
+                `;
+                return;
+            }
+
+            lista.innerHTML = evangelizados.map(evangelizado => `
+                <div class="evangelizado-card">
+                    <div class="evangelizado-header">
+                        <h4>${evangelizado.nombre}</h4>
+                        <span class="estado-badge">Activo</span>
+                    </div>
+                    <div class="evangelizado-info">
+                        <div class="info-item">
+                            <span class="info-label">Cédula:</span>
+                            <span class="info-value">${evangelizado.cedula}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Teléfono:</span>
+                            <span class="info-value">${evangelizado.telefono}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Fecha:</span>
+                            <span class="info-value">${new Date(evangelizado.fecha).toLocaleDateString()}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Inscribir nuevo evangelizado
+        document.getElementById('formulario-inscripcion').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombre_evangelizado').value;
+            const cedula = document.getElementById('cedula_evangelizado').value;
+            const telefono = document.getElementById('telefono_evangelizado').value;
+
+            // Validaciones
+            if (!/^\d+$/.test(cedula)) {
+                alert('La cédula debe contener solo números');
+                return;
+            }
+
+            // Verificar duplicados
+            if (evangelizados.some(ev => ev.cedula === cedula)) {
+                alert('Esta cédula ya está registrada');
+                return;
+            }
+
+            // Guardar evangelizado
+            const nuevoEvangelizado = {
+                nombre,
+                cedula,
+                telefono,
+                fecha: new Date().toISOString(),
+                estado: 'pre-inscrito'
+            };
+
+            evangelizados.push(nuevoEvangelizado);
+            localStorage.setItem('evangelizados', JSON.stringify(evangelizados));
+
+            // Mostrar mensaje de éxito
+            document.getElementById('mensaje-exito').style.display = 'block';
+            this.reset();
+            cargarEvangelizados();
+            actualizarEstadisticas();
+
+            // Simular envío de WhatsApp
+            console.log(`WhatsApp enviado a ${telefono}: Sus credenciales son - Usuario: ${cedula}, Contraseña: ${cedula}`);
+            
+            // Ocultar mensaje después de 5 segundos
+            setTimeout(() => {
+                document.getElementById('mensaje-exito').style.display = 'none';
+            }, 5000);
+        });
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas() {
+            document.getElementById('total-evangelizados').textContent = evangelizados.length;
+            document.getElementById('almas-comprometidas').textContent = evangelizados.length * 5; // Simulación
+            document.getElementById('biblias-solicitadas').textContent = Math.floor(evangelizados.length / 2); // Simulación
+        }
+
+        // Botón de actualizar
+        document.getElementById('btn-refresh').addEventListener('click', function() {
+            cargarEvangelizados();
+            actualizarEstadisticas();
+        });
+
+        // Cargar datos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarEvangelizados();
+            actualizarEstadisticas();
+        });
+    </script>
+</body>
+</html>

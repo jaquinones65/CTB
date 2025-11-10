@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitudes VBB - CTB</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <header class="ctb-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-contact">
+                     <span> 📞322 7721323📞 </span>
+          <span> Nuestro numero de contacto 🤝 </span>
+        </div>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="ctb-nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <div class="logo">CTB</div>
+                    <div class="brand-text">
+                        <h1>Solicitudes VBB</h1>
+                        <p>Vision Beyond Borders - Reportes Automáticos</p>
+                    </div>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="panel-pastor.html">Dashboard</a></li>
+                    <li><a href="solicitudes-vbb.html" class="active">Solicitudes VBB</a></li>
+                    <li><a href="login.html">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Panel de Control de Solicitudes -->
+        <section class="vbb-control-panel">
+            <div class="control-header">
+                <h2>Generador de Solicitudes VBB</h2>
+                <p>Formato automático para Vision Beyond Borders</p>
+            </div>
+
+            <div class="control-stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="total-evangelizadores">0</div>
+                    <div class="stat-label">Evangelizadores Registrados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="solicitudes-pendientes">0</div>
+                    <div class="stat-label">Solicitudes Pendientes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="ultima-generacion">--</div>
+                    <div class="stat-label">Última Generación</div>
+                </div>
+            </div>
+
+            <!-- Controles de Generación -->
+            <div class="generation-controls">
+                <div class="control-group">
+                    <h3>Generación Manual</h3>
+                    <p>Genere solicitudes inmediatamente</p>
+                    <div class="control-buttons">
+                        <button class="btn btn-primary" id="btn-generar-manual">
+                            Generar Solicitudes Ahora
+                        </button>
+                        <button class="btn btn-outline" id="btn-vista-previa">
+                            Vista Previa
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>Programación Automática</h3>
+                    <p>Configuración de generación automática</p>
+                    <div class="schedule-settings">
+                        <div class="setting-item">
+                            <label>
+                                <input type="checkbox" id="auto-generate" checked>
+                                Generación automática diaria
+                            </label>
+                        </div>
+                        <div class="setting-item">
+                            <label>Hora de generación:</label>
+                            <select id="generation-time">
+                                <option value="03:00">3:00 AM</option>
+                                <option value="06:00">6:00 AM</option>
+                                <option value="09:00">9:00 AM</option>
+                                <option value="12:00">12:00 PM</option>
+                            </select>
+                        </div>
+                        <div class="setting-item">
+                            <button class="btn btn-outline" id="btn-guardar-config">
+                                Guardar Configuración
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lista de Evangelizadores para Solicitudes -->
+        <section class="evangelizadores-list">
+            <div class="section-header">
+                <h2>Evangelizadores para Solicitud VBB</h2>
+                <div class="list-actions">
+                    <button class="btn btn-outline" id="btn-seleccionar-todos">
+                        Seleccionar Todos
+                    </button>
+                    <button class="btn btn-outline" id="btn-deseleccionar-todos">
+                        Deseleccionar Todos
+                    </button>
+                </div>
+            </div>
+
+            <div class="evangelizadores-grid" id="lista-evangelizadores">
+                <!-- Se llenará dinámicamente con JavaScript -->
+            </div>
+        </section>
+
+        <!-- Historial de Generación -->
+        <section class="generation-history">
+            <div class="section-header">
+                <h2>Historial de Generación</h2>
+            </div>
+            <div class="history-list" id="historial-generacion">
+                <div class="history-item">
+                    <div class="history-date">04 Junio 2025, 03:00 AM</div>
+                    <div class="history-details">45 solicitudes generadas automáticamente</div>
+                    <div class="history-actions">
+                        <button class="btn btn-small btn-outline">Descargar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista Previa (Oculta inicialmente) -->
+        <div id="vista-previa" class="vista-previa" style="display: none;">
+            <div class="previa-header">
+                <h3>Vista Previa - Solicitud VBB</h3>
+                <button class="btn btn-outline" id="btn-cerrar-previa">Cerrar</button>
+            </div>
+            <div class="previa-content" id="contenido-previa">
+                <!-- Contenido de la vista previa -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Contenido oculto para PDF -->
+    <div id="pdf-content" style="display: none;">
+        <div class="solicitud-vbb">
+            <div class="solicitud-header">
+                <p>Santiago de Cali, <span id="pdf-fecha">junio 04 de 2025</span>.</p>
+            </div>
+            
+            <div class="solicitud-destinatario">
+                <p><strong>HERMANOS<br>MINISTERIO VISION BEYOND BORDERS<br>Atención: Hermano Patrick y junta directiva</strong></p>
+            </div>
+
+            <div class="solicitud-cuerpo">
+                <p>Cordial y bendecido saludo para usted hermano Patrick, su junta directiva y todo el equipo conquistador de almas para Cristo en el planeta, desde el Ministerio y Fundación Misión T.R.E.S. en Colombia estamos altísimamente agradecidos con ustedes al dejarse usar por nuestro creador con las donaciones de biblias que desde el 05 de septiembre de 2.023 hemos recibido.</p>
+                
+                <p>Como es sabido para ustedes a través de las noticias internacionales nuestra patria Colombia está pasando por una de las situaciones mas criticas de su historia y esto ha hecho que la predicación del evangelio sea cada vez más difícil ya que ahora mismo tenemos un gobierno izquierdista y guerrillero que persigue nuestra labor con cierre de iglesias, persecución de ministros y creyentes en general y muerte de muchos ministros. No obstante, de esta situación hay un buen grupo de ministros del evangelio de Cristo comprometidos a seguir conquistado almas para Cristo en nuestra nación y tenemos como meta UN MILLÓN DE NUEVOS CREYENTES EN LOS PRÓXIMOS 1000 DÍAS con la estrategia C. T, B. Colombia Tierra Bendita, por eso en esta oportunidad les quiero presentar el siguiente hermano ministro de Dios.</p>
+
+                <div class="solicitud-evangelizador" id="pdf-evangelizador">
+                    <!-- Se llenará dinámicamente -->
+                </div>
+
+                <div class="solicitud-firmas">
+                    <div class="firma-left">
+                        <p>Cordialmente,</p>
+                        <br><br>
+                        <p>ORLANDO ALVARADO CARDOZO<br>Director Fundación Misión T.R.E.S.</p>
+                    </div>
+                    <div class="firma-right">
+                        <p>PASTOR ___________________________</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="ctb-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Sistema de Solicitudes VBB</h3>
+                    <p>Generación automática y manual de reportes</p>
+                </div>
+                <div class="footer-section">
+                    <p>Próxima generación automática: <span id="proxima-generacion">04 Junio 2025, 03:00 AM</span></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de ejemplo (en producción vendrían de la base de datos)
+        let evangelizadores = JSON.parse(localStorage.getItem('evangelizadores')) || [
+            {
+                id: 1,
+                nombre: "Carlos Rodríguez",
+                cedula: "123456789",
+                telefono: "+57 300 123 4567",
+                municipio: "Cali",
+                almas_comprometidas: 200,
+                fecha_registro: "2024-01-15"
+            },
+            {
+                id: 2,
+                nombre: "María González",
+                cedula: "987654321",
+                telefono: "+57 301 234 5678",
+                municipio: "Palmira",
+                almas_comprometidas: 150,
+                fecha_registro: "2024-02-20"
+            }
+        ];
+
+        let configuracion = JSON.parse(localStorage.getItem('configVBB')) || {
+            autoGenerate: true,
+            generationTime: "03:00",
+            lastGeneration: null
+        };
+
+        // Inicializar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarEvangelizadores();
+            actualizarEstadisticas();
+            cargarConfiguracion();
+            configurarProgramacion();
+        });
+
+        function cargarEvangelizadores() {
+            const lista = document.getElementById('lista-evangelizadores');
+            lista.innerHTML = '';
+
+            evangelizadores.forEach(evangelizador => {
+                const card = document.createElement('div');
+                card.className = 'evangelizador-card selected';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h4>${evangelizador.nombre}</h4>
+                        <label class="checkbox-container">
+                            <input type="checkbox" checked data-id="${evangelizador.id}">
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-row">
+                            <span>Cédula:</span>
+                            <strong>${evangelizador.cedula}</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Teléfono:</span>
+                            <strong>${evangelizador.telefono}</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Municipio:</span>
+                            <strong>${evangelizador.municipio}</strong>
+                        </div>
+                        <div class="info-row">
+                            <span>Almas comprometidas:</span>
+                            <strong class="almas-count">${evangelizador.almas_comprometidas}</strong>
+                        </div>
+                    </div>
+                `;
+                lista.appendChild(card);
+            });
+        }
+
+        function actualizarEstadisticas() {
+            document.getElementById('total-evangelizadores').textContent = evangelizadores.length;
+            document.getElementById('solicitudes-pendientes').textContent = evangelizadores.length;
+            
+            if (configuracion.lastGeneration) {
+                document.getElementById('ultima-generacion').textContent = 
+                    new Date(configuracion.lastGeneration).toLocaleString();
+            }
+        }
+
+        function cargarConfiguracion() {
+            document.getElementById('auto-generate').checked = configuracion.autoGenerate;
+            document.getElementById('generation-time').value = configuracion.generationTime;
+        }
+
+        // Generación manual de solicitudes
+        document.getElementById('btn-generar-manual').addEventListener('click', function() {
+            generarSolicitudesVBB();
+        });
+
+        // Vista previa
+        document.getElementById('btn-vista-previa').addEventListener('click', function() {
+            mostrarVistaPrevia();
+        });
+
+        document.getElementById('btn-cerrar-previa').addEventListener('click', function() {
+            document.getElementById('vista-previa').style.display = 'none';
+        });
+
+        // Configuración automática
+        document.getElementById('btn-guardar-config').addEventListener('click', function() {
+            guardarConfiguracion();
+        });
+
+        // Selección múltiple
+        document.getElementById('btn-seleccionar-todos').addEventListener('click', function() {
+            document.querySelectorAll('.evangelizador-card input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = true;
+                checkbox.closest('.evangelizador-card').classList.add('selected');
+            });
+        });
+
+        document.getElementById('btn-deseleccionar-todos').addEventListener('click', function() {
+            document.querySelectorAll('.evangelizador-card input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.closest('.evangelizador-card').classList.remove('selected');
+            });
+        });
+
+        // Toggle selección individual
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'checkbox' && e.target.hasAttribute('data-id')) {
+                const card = e.target.closest('.evangelizador-card');
+                if (e.target.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            }
+        });
+
+        function generarSolicitudesVBB() {
+            const seleccionados = Array.from(document.querySelectorAll('.evangelizador-card input[type="checkbox"]:checked'))
+                .map(checkbox => {
+                    const id = parseInt(checkbox.getAttribute('data-id'));
+                    return evangelizadores.find(ev => ev.id === id);
+                });
+
+            if (seleccionados.length === 0) {
+                alert('Seleccione al menos un evangelizador');
+                return;
+            }
+
+            // Aquí iría la lógica para generar el PDF
+            console.log('Generando solicitudes para:', seleccionados);
+            
+            // Simular generación
+            configuracion.lastGeneration = new Date().toISOString();
+            localStorage.setItem('configVBB', JSON.stringify(configuracion));
+            actualizarEstadisticas();
+            
+            alert(`${seleccionados.length} solicitudes generadas exitosamente`);
+        }
+
+        function mostrarVistaPrevia() {
+            const seleccionados = Array.from(document.querySelectorAll('.evangelizador-card input[type="checkbox"]:checked'))
+                .map(checkbox => {
+                    const id = parseInt(checkbox.getAttribute('data-id'));
+                    return evangelizadores.find(ev => ev.id === id);
+                });
+
+            if (seleccionados.length === 0) {
+                alert('Seleccione al menos un evangelizador para la vista previa');
+                return;
+            }
+
+            const contenido = document.getElementById('contenido-previa');
+            contenido.innerHTML = `
+                <div class="previa-solicitud">
+                    ${seleccionados.map(ev => `
+                        <div class="solicitud-item">
+                            <h4>Solicitud para: ${ev.nombre}</h4>
+                            <p><strong>Cordial saludo yo ${ev.nombre}</strong> identificado con la cedula numero <strong>${ev.cedula}</strong> con numero celular y WhatsApp <strong>${ev.telefono}</strong> desarrollo mi ministerio en el municipio <strong>${ev.municipio}</strong> y me comprometo con el programa C. T. B. Colombia Tierra Bendita para traer <strong>${ev.almas_comprometidas}</strong> almas de nuevos creyentes en los próximos 1000 días.</p>
+                            <p>Agradezco de antemano las biblias que ustedes nos donen para el logro de este propósito.</p>
+                            <hr>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            document.getElementById('vista-previa').style.display = 'block';
+        }
+
+        function guardarConfiguracion() {
+            configuracion.autoGenerate = document.getElementById('auto-generate').checked;
+            configuracion.generationTime = document.getElementById('generation-time').value;
+            
+            localStorage.setItem('configVBB', JSON.stringify(configuracion));
+            configurarProgramacion();
+            
+            alert('Configuración guardada exitosamente');
+        }
+
+        function configurarProgramacion() {
+            // En un entorno real, aquí se configuraría una tarea programada en el servidor
+            // Para esta demo, simulamos con localStorage
+            console.log('Programación configurada:', configuracion);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel CICAP - CTB</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="ctb-header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-contact">
+                    <span>Telefono: 322 7721323</span>
+                    <span>Panel CICAP - Entidad Aliada</span>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="ctb-nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <div class="logo">CTB</div>
+                    <div class="brand-text">
+                        <h1>Panel CICAP</h1>
+                        <p>Capellanía Social - Entidad Aliada</p>
+                    </div>
+                </div>
+
+                <div class="nav-image">
+                    <img src="images/ctbim1.JPG" alt="Logo CTB">
+                </div>
+                
+                <ul class="nav-menu">
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="panel-cicap.html" class="active">Panel CICAP</a></li>
+                    <li><a href="login-alianzas.html">Cerrar Sesión</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="form-section">
+            <div class="section-header">
+                <h2>Inscritos en CICAP</h2>
+                <p>Lista de personas registradas en el programa</p>
+            </div>
+
+            <div class="export-control">
+                <button class="btn btn-primary" id="btn-exportar-excel">
+                    Exportar a Excel
+                </button>
+            </div>
+
+            <div class="evangelizadores-results">
+                <div class="evangelizador-result-card">
+                    <h4>Carlos Andrés Rodríguez</h4>
+                    <div class="evangelizador-info">
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Cédula:</span>
+                            <span class="stat-value">123456789</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Ciudad:</span>
+                            <span class="stat-value">Cali</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Teléfono:</span>
+                            <span class="stat-value">+57 300 123 4567</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="evangelizador-result-card">
+                    <h4>María Fernanda González</h4>
+                    <div class="evangelizador-info">
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Cédula:</span>
+                            <span class="stat-value">987654321</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Ciudad:</span>
+                            <span class="stat-value">Palmira</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Teléfono:</span>
+                            <span class="stat-value">+57 301 234 5678</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="evangelizador-result-card">
+                    <h4>Pedro Antonio López</h4>
+                    <div class="evangelizador-info">
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Cédula:</span>
+                            <span class="stat-value">456789123</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Ciudad:</span>
+                            <span class="stat-value">Bogotá</span>
+                        </div>
+                        <div class="evangelizador-stat">
+                            <span class="stat-label">Teléfono:</span>
+                            <span class="stat-value">+57 302 345 6789</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="ctb-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Panel CICAP - CTB</h3>
+                    <p>Entidad Aliada - Capellanía Social</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('btn-exportar-excel').addEventListener('click', function() {
+            alert('Exportando datos a Excel...');
+        });
+    </script>
+</body>
+</html>
