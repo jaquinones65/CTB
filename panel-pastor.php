@@ -42,14 +42,77 @@ $total_almas = $resultado['total_almas'] ?? 0;
 $meta_total = 1000000;
 $porcentaje = ($total_almas / $meta_total) * 100;
 
-//Para traer los departamentos
-$divipol = $connect->query("
+/*TOP 5 EVANGELIZADOS CON MAS ALMAS POR ALCANZAR*/
+$sqlTop = "
     SELECT
-        id_departamento   as id_departamento,
-        nombre            as departamento
-    FROM departamentos
-    ORDER BY nombre ASC;
-    ");
+        e.nombre_completo,
+        e.numero_almas,
+        d.nombre                AS departamento,
+        c.nombre                AS ciudad
+    FROM evangelistas e
+    LEFT JOIN departamentos d
+        ON d.id_departamento = e.id_departamento
+    LEFT JOIN ciudades c
+        ON c.id_ciudad = e.id_ciudad
+    ORDER BY e.numero_almas DESC
+    LIMIT 5;
+";
+
+$stmtTop = $connect->prepare($sqlTop);
+$stmtTop->execute();
+$topEvangelistas = $stmtTop->fetchAll(PDO::FETCH_ASSOC);
+
+/* TOP 3 DEPARTAMENTOS CON MÁS EVANGELIZADOS */
+$sqlTopDeptos = "
+    SELECT 
+        d.id_departamento,
+        d.nombre AS departamento,
+        COUNT(DISTINCT ev.Evangelistas_documento) AS total_evangelizadores,
+        COUNT(ev.id_evangelizado)                 AS personas_alcanzadas
+    FROM evangelizados ev
+    JOIN departamentos d 
+        ON d.id_departamento = ev.id_departamento
+    GROUP BY d.id_departamento, d.nombre
+    ORDER BY personas_alcanzadas DESC
+    LIMIT 3;
+";
+
+$stmtTopDeptos = $connect->prepare($sqlTopDeptos);
+$stmtTopDeptos->execute();
+$topDepartamentos = $stmtTopDeptos->fetchAll(PDO::FETCH_ASSOC);
+
+/*CONSULTA DATATABLE*/
+$sqlEvTabla = "
+    SELECT 
+        e.id_evangelistas,
+        e.nombre_completo,
+        e.telefono,
+        e.email,
+        e.numero_almas,
+        COUNT(ev.id_evangelizado) AS cantidad_evangelizados,
+        d.nombre AS departamento,
+        c.nombre AS ciudad
+    FROM evangelistas e
+    LEFT JOIN evangelizados ev 
+        ON ev.Evangelistas_documento = e.documento
+    LEFT JOIN departamentos d 
+        ON d.id_departamento = e.id_departamento
+    LEFT JOIN ciudades c 
+        ON c.id_ciudad = e.id_ciudad
+    GROUP BY 
+        e.id_evangelistas,
+        e.nombre_completo,
+        e.telefono,
+        e.email,
+        e.numero_almas,
+        d.nombre,
+        c.nombre
+    ORDER BY cantidad_evangelizados DESC, e.nombre_completo ASC;
+";
+
+$stmtEvTabla = $connect->prepare($sqlEvTabla);
+$stmtEvTabla->execute();
+$listaEvangelistas = $stmtEvTabla->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 <!DOCTYPE html>
@@ -59,6 +122,8 @@ $divipol = $connect->query("
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Ministerio - CTB</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet"
+      href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.min.css">
 </head>
 <body>
       <header class="ctb-header">
@@ -86,9 +151,7 @@ $divipol = $connect->query("
                 </div>
                 
                 <ul class="nav-menu">
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="panel-pastor.html" class="active">Dashboard</a></li>
-                    <li><a href="solicitudes-vbb.html">Solicitudes VBB</a></li>
+                    <li><a href="main.php">Inicio</a></li>
                     <li><a href="logout.php">Cerrar Sesión</a></li>
                 </ul>
             </div>
@@ -121,170 +184,126 @@ $divipol = $connect->query("
             </div>
         </section>
 
-        <!-- Sistema de Filtros Mejorado -->
-        <section class="filters-section">
-            <h2>Filtros de Seguimiento</h2>
-            <div class="filters-grid">
-                <div class="filter-group">
-                    <label for="departamento">Departamentos</label>
-                    <select id="departamento" name="departamento" required>
-                        <option value="">Seleccione un Departamento</option>
-                        <?php
-                        //Traigo los registros de la consulta ya generada
-                        while($row = $divipol->fetch(PDO::FETCH_ASSOC)){
-                            echo "<option value='{$row['id_departamento']}'>{$row['departamento']}</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="ciudad">Ciudades/Municipios</label>
-                    <select id="ciudad" name="ciudad" required="">
-                        <option value="">Seleccione una Ciudad/Municipio</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="evangelizador">Todos los Evangelizadores</label>
-                    <select id="evangelizador" name="evangelizador" required="">
-                        <option value="">Seleccione un Evangelizador</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <button class="btn btn-primary" id="btn-aplicar-filtros">Aplicar Filtros</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Resultados de Filtros -->
+        <!-- TOP 5 -->
         <section class="results-section">
-            <h2>Resultados del Seguimiento</h2>
+            <h2>Resultados del Seguimiento - Top 5</h2>
             <div class="evangelizadores-results" id="resultados-evangelizadores">
-                <div class="evangelizador-result-card">
-                    <h4>Carlos Rodríguez</h4>
-                    <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Departamento:</span>
-                            <span class="stat-value">Valle del Cauca</span>
+                <?php if (!empty($topEvangelistas)): ?>
+                    <?php foreach ($topEvangelistas as $ev): ?>
+                        <div class="evangelizador-result-card">
+                            <h4><?= htmlspecialchars($ev['nombre_completo']) ?></h4>
+                            <div class="evangelizador-info">
+                                <div class="evangelizador-stat">
+                                    <span class="stat-label">Departamento:</span>
+                                    <span class="stat-value">
+                                        <?= htmlspecialchars($ev['departamento'] ?? 'Sin información') ?>
+                                    </span>
+                                </div>
+                                <div class="evangelizador-stat">
+                                    <span class="stat-label">Ciudad:</span>
+                                    <span class="stat-value">
+                                        <?= htmlspecialchars($ev['ciudad'] ?? 'Sin información') ?>
+                                    </span>
+                                </div>
+                                <div class="evangelizador-stat">
+                                    <span class="stat-label">Personas alcanzadas:</span>
+                                    <span class="stat-value">
+                                        <?= number_format((int)$ev['numero_almas'], 0, ',', '.'); ?>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Ciudad:</span>
-                            <span class="stat-value">Cali</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">245</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento mensual:</span>
-                            <span class="stat-value">+15%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="evangelizador-result-card">
-                    <h4>María González</h4>
-                    <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Departamento:</span>
-                            <span class="stat-value">Valle del Cauca</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Ciudad:</span>
-                            <span class="stat-value">Palmira</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">189</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento mensual:</span>
-                            <span class="stat-value">+12%</span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="evangelizador-result-card">
+                        <h4>Sin registros</h4>
+                        <div class="evangelizador-info">
+                            <div class="evangelizador-stat">
+                                <span class="stat-label">Información:</span>
+                                <span class="stat-value">Aún no hay evangelistas registrados con número de almas.</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="evangelizador-result-card">
-                    <h4>Pedro López</h4>
-                    <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Departamento:</span>
-                            <span class="stat-value">Bogotá D.C.</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Ciudad:</span>
-                            <span class="stat-value">Bogotá</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">312</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento mensual:</span>
-                            <span class="stat-value">+18%</span>
-                        </div>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </section>
 
-        <!-- Áreas de Mayor Crecimiento -->
+        <!-- Áreas de Mayor Crecimiento - TOP 3-->
         <section class="results-section">
             <h2>Áreas de Mayor Crecimiento</h2>
             <div class="evangelizadores-results">
-                <div class="evangelizador-result-card">
-                    <h4>Valle del Cauca - Cali</h4>
-                    <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Total evangelizadores:</span>
-                            <span class="stat-value">45</span>
+                <?php if (!empty($topDepartamentos)): ?>
+                    <?php foreach ($topDepartamentos as $dep): ?>
+                        <div class="evangelizador-result-card">
+                            <h4><?= htmlspecialchars($dep['departamento']) ?></h4>
+                            <div class="evangelizador-info">
+                                <div class="evangelizador-stat">
+                                    <span class="stat-label">Total evangelizadores:</span>
+                                    <span class="stat-value">
+                                        <?= (int)$dep['total_evangelizadores'] ?>
+                                    </span>
+                                </div>
+                                <div class="evangelizador-stat">
+                                    <span class="stat-label">Personas alcanzadas:</span>
+                                    <span class="stat-value">
+                                        <?= number_format((int)$dep['personas_alcanzadas'], 0, ',', '.'); ?>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">15,234</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento trimestral:</span>
-                            <span class="stat-value">+28%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="evangelizador-result-card">
-                    <h4>Bogotá D.C.</h4>
-                    <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Total evangelizadores:</span>
-                            <span class="stat-value">38</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">12,567</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento trimestral:</span>
-                            <span class="stat-value">+22%</span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="evangelizador-result-card">
+                        <h4>Sin datos disponibles</h4>
+                        <div class="evangelizador-info">
+                            <div class="evangelizador-stat">
+                                <span class="stat-label">Información:</span>
+                                <span class="stat-value">
+                                    Aún no se registran evangelizados para calcular las áreas de mayor crecimiento.
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="evangelizador-result-card">
-                    <h4>Antioquia - Medellín</h4>
+                <?php endif; ?>
+            </div>
+        </section>
+
+        <!-- Detalle de Evangelizadores (DataTable) -->
+        <section class="results-section">
+            <h2>Detalle de Evangelizadores</h2>
+            <p>Listado de evangelizadores con sus datos de contacto y resultados de evangelización.</p>
+
+            <div class="evangelizadores-results">
+                <div class="evangelizador-result-card" style="width:100%;">
                     <div class="evangelizador-info">
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Total evangelizadores:</span>
-                            <span class="stat-value">32</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Personas alcanzadas:</span>
-                            <span class="stat-value">10,845</span>
-                        </div>
-                        <div class="evangelizador-stat">
-                            <span class="stat-label">Crecimiento trimestral:</span>
-                            <span class="stat-value">+19%</span>
-                        </div>
+                        <div class="table-wrapper">
+                            <table id="tabla-evangelistas" class="display cell-border stripe" style="width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre completo</th>
+                                        <th>Teléfono</th>
+                                        <th>Email</th>
+                                        <th>Personas comprometidas<br>(numero_almas)</th>
+                                        <th>Cantidad evangelizados</th>
+                                        <th>Departamento</th>
+                                        <th>Ciudad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($listaEvangelistas as $row): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($row['nombre_completo']) ?></td>
+                                            <td><?= htmlspecialchars($row['telefono']) ?></td>
+                                            <td><?= htmlspecialchars($row['email']) ?></td>
+                                            <td><?= number_format((int)$row['numero_almas'], 0, ',', '.') ?></td>
+                                            <td><?= (int)$row['cantidad_evangelizados'] ?></td>
+                                            <td><?= htmlspecialchars($row['departamento'] ?? 'Sin info') ?></td>
+                                            <td><?= htmlspecialchars($row['ciudad'] ?? 'Sin info') ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>                
                     </div>
                 </div>
             </div>
@@ -305,70 +324,18 @@ $divipol = $connect->query("
             </div>
         </div>
     </footer>
+    <!-- jQuery (requerido por DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
     <script>
-        //Actualizar las ciudades en base al departamento
-        document.getElementById('departamento').addEventListener('change', function() {
-            const idDepartamento = this.value;
-            const ciudadSelect = document.getElementById('ciudad');
-            const evangelizadorSelect = document.getElementById('evangelizador');
-            ciudadSelect.innerHTML = `<option value="">Cargando...</option>`;
-            evangelizadorSelect.innerHTML = `<option value="">Seleccione una Ciudad/Municipio</option>`;
-            
-            if (idDepartamento !== '') {
-                fetch('get_ciudades.php', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `id_departamento=${encodeURIComponent(idDepartamento)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    ciudadSelect.innerHTML = `<option value="">Seleccione una Ciudad/Municipio</option>`;
-                    data.forEach(ciudad => {
-                        ciudadSelect.innerHTML += `<option value="${ciudad.id_ciudad}">${ciudad.nombre}</option>`;
-                    });
-                })
-                .catch(error => {
-                    ciudadSelect.innerHTML = `<option value="">Error al cargar las ciudades</option>`;
-                    console.error('Error:', error);
-                });
-            } else {
-                ciudadSelect.innerHTML = `<option value="">Seleccione primero un Departamento</option>`;
-            }
-        });
-        
-        // Nuevo: actualizar evangelizadores al cambiar ciudad
-        document.getElementById('ciudad').addEventListener('change', function() {
-            const idCiudad = this.value;
-            const idDepartamento = document.getElementById('departamento').value;
-            const evangelizadorSelect = document.getElementById('evangelizador');
-            evangelizadorSelect.innerHTML = `<option value="">Cargando evangelizadores...</option>`;
-            
-            if (idCiudad !== '' && idDepartamento !== '') {
-                fetch('get_evangelizadores.php', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `id_departamento=${encodeURIComponent(idDepartamento)}&id_ciudad=${encodeURIComponent(idCiudad)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        evangelizadorSelect.innerHTML = `<option value="">Seleccione un Evangelizador</option>`;
-                        data.forEach(e => {
-                            evangelizadorSelect.innerHTML += `<option value="${e.id_evangelista}">${e.nombre_completo}</option>`;
-                        });
-                    } else {
-                        evangelizadorSelect.innerHTML = `<option value="">No existen evangelizadores</option>`;
-                    }
-                })
-                .catch(error => {
-                    evangelizadorSelect.innerHTML = `<option value="">Error al cargar evangelizadores</option>`;
-                    console.error('Error:', error);
-                });
-            } else {
-                evangelizadorSelect.innerHTML = `<option value="">Seleccione primero un departamento y ciudad</option>`;
-            }
+        // DATA TABLE
+        $('#tabla-evangelistas').DataTable({
+            pageLength: 5,
+            lengthMenu: [ [5, 10, 25, 50, 100, 200], [5, 10, 25, 50, 100, 200] ],
+            order: [[4, 'desc']]
         });
     </script>
-
 </body>
 </html>

@@ -31,6 +31,29 @@ body {
     line-height: 1.6;
 }
 
+/* Estilo específico para la tabla de evangelistas */
+#tabla-evangelistas {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 14px;
+}
+
+#tabla-evangelistas thead th {
+    border-bottom: 2px solid #0d6efd;   /* línea azul bajo los encabezados */
+    padding: 8px 12px;
+}
+
+#tabla-evangelistas tbody td {
+    border-bottom: 1px solid #e0e0e0;   /* líneas grises entre filas */
+    padding: 6px 12px;
+}
+
+/* Opcional: rayas alternadas */
+#tabla-evangelistas tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+
 .container {
     width: 90%;
     max-width: 1200px;
