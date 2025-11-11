@@ -276,7 +276,7 @@ $listaEvangelistas = $stmtEvTabla->fetchAll(PDO::FETCH_ASSOC);
             <div class="evangelizadores-results">
                 <div class="evangelizador-result-card" style="width:100%;">
                     <div class="evangelizador-info">
-                        <div class="table-wrapper">
+                        <div class="table-wrapper tabla-pastores">
                             <table id="tabla-evangelistas" class="display cell-border stripe" style="width:100%;">
                                 <thead>
                                     <tr>
